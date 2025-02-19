@@ -202,9 +202,174 @@ void affiche_arbre(Arbre a){
     affiche_arbre(a->fd);
 }
 
-int main(){
-    Arbre a = NULL;
-    construit_complet(3, &a);
-    affiche_arbre(a);
-    return 0;
+int construit_filiforme_aleatoire(int h, Arbre *a, int graine) {
+    if (h <= 0) {
+        return 0; 
+    }
+    srand(graine);
+    *a = alloue_noeud(1, NULL, NULL);
+    if (*a == NULL) {
+        return 0;
+    }
+    Arbre courant = *a;
+    for (int i = 2; i <= h + 1; ++i) {
+        if (rand() % 2 == 0) {
+            courant->fg = alloue_noeud(i, NULL, NULL);
+            courant = courant->fg;
+        } else {
+            courant->fd = alloue_noeud(i, NULL, NULL);  
+            courant = courant->fd; 
+        }
+    }
+    return 1; 
+}
+
+int insere_niveau(Arbre a, int niv, Liste * lst){
+    if (a == NULL) {
+        return 0;
+    }
+    if (niv == 0) {
+        Cellule * c = alloue_cellule(a);
+        if (c == NULL) {
+            return 0;
+        }
+        insere_en_tete(lst, c);
+        return 1;
+    }
+    int fg = insere_niveau(a->fg, niv - 1, lst);
+    int fd = insere_niveau(a->fd, niv - 1, lst);
+    return fg && fd;
+}
+
+int parcours_largeur_naif(Arbre a, Liste * lst){
+    if (a == NULL) {
+        return 0;
+    }
+    int hauteur = 0;
+    Arbre courant = a;
+    while (courant != NULL) {
+        hauteur++;
+        courant = courant->fg;
+    }
+    for (int i = 0; i < hauteur; ++i) {
+        if (!insere_niveau(a, i, lst)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int parcours_largeur(Arbre a, Liste * lst) {
+    if (a == NULL) {
+        return 0;
+    }
+    File f = initialisation();
+    if (f == NULL) {
+        return 0;
+    }
+    if (!enfiler(f, a)) {
+        free(f);
+        return 0;
+    }
+    while (!est_vide(f)) {
+        Noeud * courant;
+        if (!defiler(f, &courant)) {
+            free(f);
+            return 0;
+        }
+        if (courant != NULL) {
+            if (courant->fg != NULL) {
+                if (!enfiler(f, courant->fg)) {
+                    free(f);
+                    return 0;
+                }
+            }
+            if (courant->fd != NULL) {
+                if (!enfiler(f, courant->fd)) {
+                    free(f);
+                    return 0;
+                }
+            }
+            Cellule * c = alloue_cellule(courant);
+            if (c == NULL) {
+                free(f);
+                return 0;
+            }
+            insere_en_tete(lst, c);
+        }
+    }
+    free(f);
+    return 1;
+}
+
+int parcours_largeur_V2(Arbre a, Liste * lst, int * nb_visite) {
+    if (a == NULL) {
+        return 0;
+    }
+    *nb_visite = 0;
+    File f = initialisation();
+    if (f == NULL) {
+        return 0;
+    }
+    if (!enfiler(f, a)) {
+        free(f);
+        return 0;
+    }
+    while (!est_vide(f)) {
+        Noeud * courant;
+        if (!defiler(f, &courant)) {
+            free(f);
+            return 0;
+        }
+        if (courant != NULL) {
+            (*nb_visite)++;
+            if (courant->fg != NULL) {
+                if (!enfiler(f, courant->fg)) {
+                    free(f);
+                    return 0;
+                }
+            }
+            if (courant->fd != NULL) {
+                if (!enfiler(f, courant->fd)) {
+                    free(f);
+                    return 0;
+                }
+            }
+            Cellule * c = alloue_cellule(courant);
+            if (c == NULL) {
+                free(f);
+                return 0;
+            }
+            insere_en_tete(lst, c);
+        }
+    }
+    free(f);
+    return 1;
+}
+
+int parcours_largeur_naif_V2(Arbre a, Liste * lst, int * nb_visite) {
+    if (a == NULL) {
+        return 0;
+    }
+    *nb_visite = 0;
+    int hauteur = 0;
+    Arbre courant = a;
+    while (courant != NULL) {
+        hauteur++;
+        courant = courant->fg;
+    }
+    for (int i = 0; i < hauteur; ++i) {
+        int nb_visite_niveau = 0;
+        if (!insere_niveau(a, i, lst)) {
+            return 0;
+        }
+        // Compter le nombre de nœuds visités à ce niveau
+        Cellule *temp = *lst;
+        while (temp != NULL) {
+            nb_visite_niveau++;
+            temp = temp->suivant;
+        }
+        *nb_visite += nb_visite_niveau;
+    }
+    return 1;
 }
