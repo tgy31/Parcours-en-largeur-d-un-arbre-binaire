@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 typedef struct _noeud {
     int valeur;
@@ -19,6 +20,7 @@ typedef struct {
 } Queue, * File;
 
 Cellule * alloue_cellule(Noeud * n) {
+    assert(n != NULL);
     Cellule * c = (Cellule *) malloc(sizeof(Cellule));
     if(c == NULL){
         fprintf(stderr, "Erreur d'allocation de mémoire\n");
@@ -30,6 +32,7 @@ Cellule * alloue_cellule(Noeud * n) {
 }
 
 void insere_en_tete(Liste * l, Cellule * c) {
+    assert(c != NULL);
     if(*l == NULL) {
         *l = c;
     } else {
@@ -100,6 +103,7 @@ int enfiler(File f, Noeud * n) {
 }
 
 int defiler(File f, Noeud ** sortant) {
+    assert(sortant != NULL);
     if(est_vide(f)) {
         return 0;
     }
@@ -115,6 +119,9 @@ int defiler(File f, Noeud ** sortant) {
 }
 
 Noeud * alloue_noeud(int val, Arbre fg, Arbre fd) {
+    assert(fg != NULL);
+    assert(fd != NULL);
+    assert(val >= 0);
     Noeud * n = (Noeud *) malloc(sizeof(Noeud));
     if(n == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire\n");
@@ -127,7 +134,7 @@ Noeud * alloue_noeud(int val, Arbre fg, Arbre fd) {
 }
 
 int construit_complet(int h, Arbre *a) {
-    assert(h >= 0); // Vérifier que la hauteur est non négative
+    assert(h >= 0);
 
     if (h == 0) {
         *a = NULL;
@@ -192,15 +199,15 @@ int construit_complet(int h, Arbre *a) {
 }
 
 void affiche_arbre(Arbre a){
-    //affiche dans un ordre prefixe et affiche 0 pour un fils vide
     if(a == NULL){
-        printf("0 ");
+        printf("0");
         return;
     }
     printf("%d ", a->valeur);
     affiche_arbre(a->fg);
     affiche_arbre(a->fd);
 }
+
 
 int construit_filiforme_aleatoire(int h, Arbre *a, int graine) {
     if (h <= 0) {
@@ -224,6 +231,7 @@ int construit_filiforme_aleatoire(int h, Arbre *a, int graine) {
     return 1; 
 }
 
+
 int insere_niveau(Arbre a, int niv, Liste * lst){
     if (a == NULL) {
         return 0;
@@ -240,6 +248,8 @@ int insere_niveau(Arbre a, int niv, Liste * lst){
     int fd = insere_niveau(a->fd, niv - 1, lst);
     return fg && fd;
 }
+
+
 
 int parcours_largeur_naif(Arbre a, Liste * lst){
     if (a == NULL) {
@@ -258,6 +268,7 @@ int parcours_largeur_naif(Arbre a, Liste * lst){
     }
     return 1;
 }
+
 
 int parcours_largeur(Arbre a, Liste * lst) {
     if (a == NULL) {
@@ -373,3 +384,4 @@ int parcours_largeur_naif_V2(Arbre a, Liste * lst, int * nb_visite) {
     }
     return 1;
 }
+
