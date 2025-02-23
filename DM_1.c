@@ -38,6 +38,7 @@ int puissance_deux(int h) {
     /* Calcule la puissance de deux pour un entier donné
     Param h : Exposant de la puissance de deux
     Return : 2^(h) */
+    assert(h >= 0);
     int result = 1;
     for (int i = 0; i < h + 1; i++) {
         result *= 2;
