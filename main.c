@@ -4,12 +4,13 @@
 #include <assert.h>
 #include <time.h>
 
+// Inclure la bibliothèque mathématique
+// #include <math.h> // Cette ligne n'est plus nécessaire
+
 typedef struct _noeud {
     int valeur;
     struct _noeud *fg, *fd;
 } Noeud, * Arbre;
-
-
 
 typedef struct cell {
     Noeud * noeud;
@@ -51,7 +52,6 @@ Cellule * extrait_tete(Liste * l) {
     c->suivant = NULL;
     return c;
 }
-
 
 void affiche_liste_renversee(Liste lst) {
     if(lst == NULL) {
@@ -106,7 +106,6 @@ int enfiler(File f, Noeud * n) {
 }
 
 int defiler(File f, Noeud ** sortant) {
-
     if(est_vide(f)) {
         *sortant = NULL;
         return 0;
@@ -120,6 +119,7 @@ int defiler(File f, Noeud ** sortant) {
     }
     return 1;
 }
+
 Noeud * alloue_noeud(int val, Arbre fg, Arbre fd) {
     Noeud * n = (Noeud *) malloc(sizeof(Noeud));
     if(n == NULL) {
@@ -132,8 +132,16 @@ Noeud * alloue_noeud(int val, Arbre fg, Arbre fd) {
     return n;
 }
 
-int construit_complet(int h, Arbre *a) {
+// Fonction pour calculer 2^(h + 1) sans utiliser pow
+int puissance_deux(int h) {
+    int result = 1;
+    for (int i = 0; i < h + 1; i++) {
+        result *= 2;
+    }
+    return result;
+}
 
+int construit_complet(int h, Arbre *a) {
     if (h == 0) {
         *a = NULL;
         return 1;
@@ -157,7 +165,7 @@ int construit_complet(int h, Arbre *a) {
         return 0;
     }
 
-    while (val <= (1 << (h + 1)) - 1) {
+    while (val <= puissance_deux(h) - 1) { // Remplacer l'opérateur de décalage par puissance_deux
         Noeud *courant;
         if (!defiler(f, &courant)) {
             liberer_arbre(*a);
@@ -177,7 +185,7 @@ int construit_complet(int h, Arbre *a) {
             return 0;
         }
 
-        if (val <= (1 << (h + 1)) - 1) {
+        if (val <= puissance_deux(h) - 1) { // Remplacer l'opérateur de décalage par puissance_deux
             courant->fd = alloue_noeud(val++, NULL, NULL);
             if (courant->fd == NULL) {
                 liberer_arbre(*a);
@@ -206,7 +214,6 @@ void affiche_arbre(Arbre a){
     affiche_arbre(a->fd);
 }
 
-
 int construit_filiforme_aleatoire(int h, Arbre *a, int graine) {
     if (h < 0) {
         return 0; 
@@ -229,10 +236,8 @@ int construit_filiforme_aleatoire(int h, Arbre *a, int graine) {
     return 1; 
 }
 
-
 int insere_niveau(Arbre a, int niv, Liste * lst){
     if (a == NULL) {
-        *lst = NULL;
         return 1;
     }
     if (niv == 0) {
@@ -247,8 +252,6 @@ int insere_niveau(Arbre a, int niv, Liste * lst){
     int fd = insere_niveau(a->fd, niv - 1, lst);
     return fg || fd;
 }
-
-
 
 int parcours_largeur_naif(Arbre a, Liste * lst){
     if (a == NULL) {
@@ -267,7 +270,6 @@ int parcours_largeur_naif(Arbre a, Liste * lst){
     }
     return 1;
 }
-
 
 int parcours_largeur(Arbre a, Liste * lst) {
     if (a == NULL) {
@@ -373,7 +375,6 @@ int parcours_largeur_naif_V2(Arbre a, Liste * lst, int * nb_visite) {
         if (!insere_niveau(a, i, lst)) {
             return 0;
         }
-        // Compter le nombre de nœuds visités à ce niveau
         Cellule *temp = *lst;
         while (temp != NULL) {
             nb_visite_niveau++;
@@ -383,4 +384,3 @@ int parcours_largeur_naif_V2(Arbre a, Liste * lst, int * nb_visite) {
     }
     return 1;
 }
-
