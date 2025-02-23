@@ -9,8 +9,8 @@ int main() {
     Arbre a = NULL;
     Liste lst = NULL;
     int nb_visite = 0;
-    int hauteur_complet = 25;   // Hauteur 5 -> 63 nœuds
-    int nb_noeuds_filiforme = puissance_deux(hauteur_complet) - 1; // 63 nœuds pour l'arbre filiforme
+    int hauteur_complet = 25;
+    int nb_noeuds_filiforme = puissance_deux(hauteur_complet) - 1;
     int graine = time(NULL);
 
     // Mesurer le temps pour construire un arbre complet
